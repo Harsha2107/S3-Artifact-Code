@@ -1,0 +1,30 @@
+pipeline{
+    agent any 
+    tools{
+        maven 'mymaven'
+    }
+        stages{
+            stage("Code"){
+                steps{
+                    git 'https://github.com/devops0014/one.git'
+                }
+            }
+            stage("Build"){
+                steps{
+                    sh "mvn clean package"
+                }
+            }
+            stage("Artifact"){
+                steps{
+                    s3Upload(
+                        profile: 'mybucket',
+                        path: 'target/*.war',
+                        bucket: 'hharsha2107',
+                        acl: 'Private',
+                        storageClass: 'Standard',
+                        region: 'ap-south-2'
+                    )
+                }
+            }
+        }
+}
